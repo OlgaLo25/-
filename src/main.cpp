@@ -22,7 +22,7 @@
 int main()
 {
 	
-	Numbers data=Numbers();
+	Numbers data;
 	cout << "Enter 1 - insert\n"
 			"Enter 2 - max and min\n"
 			"Enter 3 - odd numbers\n"
@@ -62,4 +62,5 @@ int main()
 			break;
 		}
 	}
+	return 0;
 }
