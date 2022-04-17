@@ -10,5 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: install libs
+        run: sudo apt-get install gcc-multilib g++-multilib
       - name: make
         run: make
