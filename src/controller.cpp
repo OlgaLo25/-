@@ -1,10 +1,100 @@
 #include "controller.h"
 
-controller::controller(database &dbase, registration &registerNew)
+controller::controller()
 {
+    login loggedIn = login();
+    checker checkUser = checker();
+    database dbase = database();
+
+    this->check = check;
+    this->loggedIn = loggedIn;
     this->dbase = dbase;
-    this->registerNew = registerNew;
     allUsers = this->dbase.readData();
+}
+
+void controller::commands()
+{
+    cout << "Enter 1 for registration\nEnter 2 to login\nEnter 0 for exit" << endl;
+    int choice;
+    cin >> choice;
+    if (choice == 1)
+    {
+        addUser();
+    }
+    else if (choice == 2)
+    {
+        loginFunction();
+    }
+    else
+    {
+        return;
+    }
+}
+
+string controller::correctUserName()
+{
+    int choice;
+    string login;
+    cout << "Enter the username" << endl;
+    cin >> login;
+    bool userNameExistsFirstTry = check.checkUserName(login, allUsers);
+    if (userNameExistsFirstTry == false)
+    {
+        return login;
+    }
+
+    while (true)
+    {
+        cout << "The username is already exists\nEnter 1 to choose new username\nEnter 0 to exit" << endl;
+        cin >> choice;
+        if (choice == 1)
+        {
+            cout << "Enter the username" << endl;
+            cin >> login;
+            bool userNameExists = check.checkUserName(login, allUsers);
+            if (userNameExists == false)
+            {
+                return login;
+            }
+        }
+        else if (choice == 0)
+        {
+            return "";
+        }
+    }
+}
+
+string controller::correctEmail()
+{
+    int choice;
+    string email;
+    cout << "Enter the email" << endl;
+    cin >> email;
+    bool emailExistsFirstTry = check.checkEmail(email, allUsers);
+    if (emailExistsFirstTry == false)
+    {
+        return email;
+    }
+
+    while (true)
+    {
+        cout << "The email is already exists\nEnter 1 to choose another email\nEnter 0 to exit" << endl;
+        cin >> choice;
+        if (choice == 1)
+        {
+            cout << "Enter the email" << endl;
+            cin >> email;
+            bool emailExist = check.checkEmail(email, allUsers);
+            if (emailExist == false)
+            {
+                return email;
+            }
+        }
+        else if (choice == 0)
+        {
+            return "";
+        }
+    }
 }
 
 void controller::addUser()
@@ -13,53 +103,33 @@ void controller::addUser()
     int phoneNumber;
     cout << "Enter the first name" << endl;
     cin >> firstName;
-    cout << "Enter thelast name" << endl;
+    cout << "Enter the last name" << endl;
     cin >> lastName;
-    cout << "Enter the login" << endl;
-    cin >> login;
+
+    login = correctUserName();
+    if (login == "")
+    {
+        return;
+    }
+
     cout << "Enter password" << endl;
     cin >> password;
-    cout << "Enter email" << endl;
-    cin >> email;
+
+    email = correctEmail();
+    if (login == "")
+    {
+        return;
+    }
+
     cout << "Enter the phone number" << endl;
     cin >> phoneNumber;
 
     User user{firstName, lastName, login, password, email, phoneNumber};
-    if(registerNew.checkUser(user,allUsers)==true){
-        allUsers.push_back(user);
-        dbase.writeData(allUsers);
-    }
+    allUsers.push_back(user);
+    dbase.writeData(allUsers);
 }
 
-// ТЗ (что-то похожее на онлайн магазин):
-
-// 1)При запуске программы юзер должен либо зарегистрироваться либо войти если он зареган:
-//   -Поля для регистрации (имя,фамилия,логин,пароль,почта,номер телефона) // delete update //checkers for registration fields
-//   //-Поля для входа (логин, пароль)
-
-// 2)После входа юзера или успешной регистрации, программа должна предложить на выбор:
-//   а)все разделы категорий которые есть(в нашем случае это телефоны, ноутбуки, планшеты)
-//   б)корзину юзера
-//   в)понравившиеся товары.(Избранное)
-//   г)Профиль юзера
-
-// Для пункта а):
-// ---Юзер может выбрать любой раздел , просмотреть все товары которые есть в разделе и краткое описание этих товаров. Также юзер может выбрать какой - то конкретный товар и посмотреть полное описание этого товара.
-
-// ---При выборе раздела должна быть опция поиска по названию товара и опция фильтра по цене
-
-// ---При выборе конкретного товара должна быть возможность добавить товар в корзину и пометить как понравившееся(избранное)
-
-// Для пункта б)
-// ---Должна быть опция для просмотра товаров в корзине.
-// ---Должна быть опция для покупки товаров в корзине (При покупке просто выводим сообщение что-то типо с вами свяжутся наши сотрудники в ближайшее время)
-// ---Должна быть опция для удаления товара из корзины
-
-// Для пункта в)
-// ---Должна быть опция для просмотра товаров в избранном
-// ---Должна быть опция для удаления товара из избранных
-
-// Для пункта г)
-// ---Просмотр профиля(имя,фамилия,логин,пароль,почта,номер телефона)
-// ---Опция для изменения пароля и почты
-// ---Опция для удаления профиля
+bool controller::loginFunction()
+{
+    return loggedIn.userLogin(check, allUsers);
+}

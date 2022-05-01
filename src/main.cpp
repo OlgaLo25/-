@@ -4,10 +4,9 @@
 
 int main()
 {
-	database dbase = database();
-	registration registerNew = registration();
-	controller control(dbase,registerNew);
-	control.addUser();
+	
+	controller control;
+	control.commands();
 	
 	return 0;
 }

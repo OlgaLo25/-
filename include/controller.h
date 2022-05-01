@@ -1,18 +1,26 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 #include "database.h"
-#include "registration.h"
+#include "checker.h"
+#include "login.h"
 
 class controller{
 
 private:
     vector<User> allUsers;
     database dbase;
-    registration registerNew;
+    checker check;
+    login loggedIn;
 
-public:
-    controller(database &dbase,registration &registerNew); 
+    bool loginFunction();
     void addUser();
+    void update();
+    string correctUserName();
+    string correctEmail();
+public:
+    controller(); 
+    void commands();
+    
 };
 
 
