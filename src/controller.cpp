@@ -2,13 +2,9 @@
 
 controller::controller()
 {
-    login loggedIn = login();
-    checker checkUser = checker();
-    database dbase = database();
-
-    this->check = check;
-    this->loggedIn = loggedIn;
-    this->dbase = dbase;
+    this->loginUser = login();
+    this->dbase = database();
+    this->registrationUser = registration();
     allUsers = this->dbase.readData();
 }
 
@@ -19,11 +15,11 @@ void controller::commands()
     cin >> choice;
     if (choice == 1)
     {
-        addUser();
+        registrationStatus();
     }
     else if (choice == 2)
     {
-        loginFunction();
+        loginUser.userLogin(allUsers);
     }
     else
     {
@@ -31,105 +27,18 @@ void controller::commands()
     }
 }
 
-string controller::correctUserName()
+void controller::registrationStatus()
 {
-    int choice;
-    string login;
-    cout << "Enter the username" << endl;
-    cin >> login;
-    bool userNameExistsFirstTry = check.checkUserName(login, allUsers);
-    if (userNameExistsFirstTry == false)
+    User user;
+    bool isRegistered = registrationUser.registrationUser(user, allUsers);
+    if (isRegistered)
     {
-        return login;
+        allUsers.push_back(user);
+        dbase.writeData(allUsers);
+        cout << "Successfully registered" << endl;
     }
-
-    while (true)
+    else
     {
-        cout << "The username is already exists\nEnter 1 to choose new username\nEnter 0 to exit" << endl;
-        cin >> choice;
-        if (choice == 1)
-        {
-            cout << "Enter the username" << endl;
-            cin >> login;
-            bool userNameExists = check.checkUserName(login, allUsers);
-            if (userNameExists == false)
-            {
-                return login;
-            }
-        }
-        else if (choice == 0)
-        {
-            return "";
-        }
+        cout << "Try again" << endl;
     }
-}
-
-string controller::correctEmail()
-{
-    int choice;
-    string email;
-    cout << "Enter the email" << endl;
-    cin >> email;
-    bool emailExistsFirstTry = check.checkEmail(email, allUsers);
-    if (emailExistsFirstTry == false)
-    {
-        return email;
-    }
-
-    while (true)
-    {
-        cout << "The email is already exists\nEnter 1 to choose another email\nEnter 0 to exit" << endl;
-        cin >> choice;
-        if (choice == 1)
-        {
-            cout << "Enter the email" << endl;
-            cin >> email;
-            bool emailExist = check.checkEmail(email, allUsers);
-            if (emailExist == false)
-            {
-                return email;
-            }
-        }
-        else if (choice == 0)
-        {
-            return "";
-        }
-    }
-}
-
-void controller::addUser()
-{
-    string firstName, lastName, login, password, email;
-    int phoneNumber;
-    cout << "Enter the first name" << endl;
-    cin >> firstName;
-    cout << "Enter the last name" << endl;
-    cin >> lastName;
-
-    login = correctUserName();
-    if (login == "")
-    {
-        return;
-    }
-
-    cout << "Enter password" << endl;
-    cin >> password;
-
-    email = correctEmail();
-    if (login == "")
-    {
-        return;
-    }
-
-    cout << "Enter the phone number" << endl;
-    cin >> phoneNumber;
-
-    User user{firstName, lastName, login, password, email, phoneNumber};
-    allUsers.push_back(user);
-    dbase.writeData(allUsers);
-}
-
-bool controller::loginFunction()
-{
-    return loggedIn.userLogin(check, allUsers);
 }
